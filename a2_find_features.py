@@ -55,6 +55,9 @@ def writeCSV(filename, prediction):
     print "Finished writing!"
 
 ########## Main body ##########
+### Predefine 
+n = 1115 #Numbers of store
+
 ### Read train data
 rawData = readCSV('train.csv')
 data = preprocess(rawData)
@@ -63,11 +66,24 @@ data = preprocess(rawData)
 globalAverage = 1.0 * sum(map(lambda x:x['Sales'], data)) / len(data)
 print globalAverage
 
+storeAverage = [0] * (n+1)
+storeOpenDays = [0] * (n+1)
+for d in data:
+    if d['Open'] == 1:
+        print d['Store']
+        storeAverage[d['Store']] += d['Sales']
+        storeOpenDays[d['Store']] += 1
+storeAverage = map(lambda x,y:0 if y == 0 else 1.0*x/y, storeAverage, storeOpenDays)
+
+print storeAverage
+
 ### Read test data
 rawTestData = readCSV('test.csv')
 testData = preprocessTestData(rawTestData)
 
 ### Write the answer
-prediction = [globalAverage for i in range(len(testData))]
+prediction = []
+for d in testData:
+    prediction.append(storeAverage[d['Store']])
 writeCSV('predict.csv', prediction)
 
