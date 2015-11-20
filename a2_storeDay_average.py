@@ -66,16 +66,25 @@ data = preprocess(rawData)
 globalAverage = 1.0 * sum(map(lambda x:x['Sales'], data)) / len(data)
 print globalAverage
 
+### storeAverage (feature 1)
 storeAverage = [0] * (n+1)
 storeOpenDays = [0] * (n+1)
 for d in data:
     if d['Open'] == 1:
-        print d['Store']
         storeAverage[d['Store']] += d['Sales']
         storeOpenDays[d['Store']] += 1
 storeAverage = map(lambda x,y:0 if y == 0 else 1.0*x/y, storeAverage, storeOpenDays)
 
-print storeAverage
+### day average in each store
+storeAverage = [[0 for col in range(8)] for row in range(n+1)]
+storeOpenDays = [[0 for col in range(8)] for row in range(n+1)]
+for d in data:
+    if d['Open'] == 1:
+        storeAverage[d['Store']][d['DayOfWeek']] += d['Sales']
+        storeOpenDays[d['Store']][d['DayOfWeek']] += 1
+for store in range(len(storeAverage)):
+    for day in range(1,8):
+        storeAverage[store][day] = 0 if storeOpenDays[store][day] == 0 else 1.0 * storeAverage[store][day]/storeOpenDays[store][day]
 
 ### Read test data
 rawTestData = readCSV('test.csv')
@@ -84,6 +93,6 @@ testData = preprocessTestData(rawTestData)
 ### Write the answer
 prediction = []
 for d in testData:
-    prediction.append(storeAverage[d['Store']])
+    prediction.append(storeAverage[d['Store']][d['DayOfWeek']])
 writeCSV('predict.csv', prediction)
 

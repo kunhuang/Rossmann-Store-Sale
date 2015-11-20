@@ -3,8 +3,6 @@
 ## Timeline
 |Days reminding|Date|Event|
 |-----|-----|-----|
-|14|11.18| Have Chosen the task|
-|13|11.21| |
 |12|11.20| |
 |11|11.21| |
 |10|11.22| |
@@ -18,6 +16,9 @@
 |2|11.30| Write the report|
 |1|12.01| Deadline|
 
+
+## NOTICE
+There are some mistake in data file (test.csv). I have found the solution in the official forums ([here](https://www.kaggle.com/c/rossmann-store-sales/forums/t/16835/open-is-blank-in-test-file-for-store-622)) and I have fixed it. Please use the data files in the Github.
 
 ## Data Format
 
@@ -48,10 +49,25 @@ In every list, you can use data[i]['Sales'] to choose the attribute you want.
 'SchoolHoliday' is string
 
 
+## Features
+[d['Store'], d['DayOfWeek'], d['Customers'], d['Promo'], d['Open']]
 
-## NOTICE
-There are some mistake in data file (test.csv). I have found the solution in the official forums ([here](https://www.kaggle.com/c/rossmann-store-sales/forums/t/16835/open-is-blank-in-test-file-for-store-622)) and I have fixed it. Please use the data files in the Github.
+The importance:
+[ 0.10359769,  0.06754357,  0.58253376,  0.06260609,  0.18371888]
+
+HOWEVER, there is no Customers info in test dataset.
 
 
 ## Reference
 [How to read and write .csv in python](https://docs.python.org/2/library/csv.html)
+
+## Submission Log
+
+([d['Store'], d['DayOfWeek'], storeDayCustomers[d['Store']][d['DayOfWeek']], d['Promo'], d['Open']]) (n_estimators=200, n_jobs = -1, max_features = 'sqrt')
+
+Training error 0.0544613850044
+
+Validation error 0.192662345153
+
+Test error 0.19773
+
