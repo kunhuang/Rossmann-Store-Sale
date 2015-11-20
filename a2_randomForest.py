@@ -18,11 +18,19 @@ def preprocess(raw):
     for row in raw:
         d = {}; i = 0
         for name in names:
-            d[name] = row[i]
-            if (i == 7) or (i == 8):
-                d[name] = d[name][1:-1]
-            elif i != 2:
-                d[name] = int(d[name])
+            if i == 2:
+                d['Year'] = int(row[i][0:4])
+                d['Month'] = int(row[i][5:7])
+                d['Day'] = int(row[i][8:9])
+            elif i == 7:
+                if row[i][1:-1] == "0":
+                    d[name] = 0
+                else:
+                    d[name] = ord("a") - ord(row[i][1:-1]) + 1
+            elif i == 8:
+                d[name] = int(row[i][1:-1])
+            else: 
+                d[name] = int(row[i])
             i += 1
         dataDict.append(dict(d))
 
@@ -35,11 +43,19 @@ def preprocessTestData(test):
     for row in test:
         d = {}; i = 0
         for name in names:
-            d[name] = row[i]
-            if (i == 6) or (i == 7):
-                d[name] = d[name][1:-1]
-            elif i != 3:
-                d[name] = int(d[name])
+            if i == 3:
+                d['Year'] = int(row[i][0:4])
+                d['Month'] = int(row[i][5:7])
+                d['Day'] = int(row[i][8:9])
+            elif i == 6:
+                if row[i][1:-1] == "0":
+                    d[name] = 0
+                else:
+                    d[name] = ord("a") - ord(row[i][1:-1]) + 1
+            elif i == 7:
+                d[name] = int(row[i][1:-1])
+            else: 
+                d[name] = int(row[i])
             i += 1
         dataDict.append(dict(d))
 
@@ -57,7 +73,7 @@ def writeCSV(filename, prediction):
 def splitTrainData(data):
     return data[:102580], data[102580:]
 
-########## Main body ##########
+########## Model Building ##########
 ### Predefine 
 n = 1115 #Numbers of store
 
@@ -103,12 +119,12 @@ validData, trainData = splitTrainData(data)
 X_train = [];
 y_train = [];
 for d in trainData:
-    X_train.append([d['Store'], d['DayOfWeek'], d['Customers'], d['Promo'], d['Open']])
+    X_train.append( [sum(storeAverage[d['Store']]) / len(storeAverage[d['Store']]), storeAverage[d['Store']][d['DayOfWeek']], storeDayCustomers[d['Store']][d['DayOfWeek']], d['Promo'], d['Open'], d['SchoolHoliday'], d['StateHoliday'], d['Month'], d['Day']])
     y_train.append(d['Sales'])
 
 ### Random Forest
 from sklearn.ensemble import RandomForestRegressor
-estimator = RandomForestRegressor(n_estimators=200, n_jobs = -1, max_features = 'sqrt')
+estimator = RandomForestRegressor(n_estimators=100, n_jobs = -1, max_features = 'sqrt')
 estimator.fit(X_train, y_train)
 yp = estimator.predict(X_train)
 
@@ -122,19 +138,19 @@ print 'Training error', rmspe(y_train, yp)
 X_valid = [];
 y_valid = [];
 for d in validData:
-    X_valid.append([d['Store'], d['DayOfWeek'], storeDayCustomers[d['Store']][d['DayOfWeek']], d['Promo'], d['Open']])
+    X_valid.append( [sum(storeAverage[d['Store']]) / len(storeAverage[d['Store']]), storeAverage[d['Store']][d['DayOfWeek']], storeDayCustomers[d['Store']][d['DayOfWeek']], d['Promo'], d['Open'], d['SchoolHoliday'], d['StateHoliday'], d['Month'], d['Day']])
     y_valid.append(d['Sales'])
 yp_valid = estimator.predict(X_valid)
 print 'Validation error', rmspe(y_valid, yp_valid)
 
+########## Output ##########
 ### Read test data
 rawTestData = readCSV('test.csv')
 testData = preprocessTestData(rawTestData)
+### Predict
 X = []
 for d in testData:
-    X.append([d['Store'], d['DayOfWeek'], storeDayCustomers[d['Store']][d['DayOfWeek']], d['Promo'], d['Open']])
-
-prediction = estimator.predict(X)    
-
+    X.append( [sum(storeAverage[d['Store']]) / len(storeAverage[d['Store']]), storeAverage[d['Store']][d['DayOfWeek']], storeDayCustomers[d['Store']][d['DayOfWeek']], d['Promo'], d['Open'], d['SchoolHoliday'], d['StateHoliday'], d['Month'], d['Day']])
+prediction = estimator.predict(X)
 ### Write the answer
 writeCSV('predict.csv', prediction)

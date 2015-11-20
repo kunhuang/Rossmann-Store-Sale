@@ -30,13 +30,27 @@ In every list, you can use data[i]['Sales'] to choose the attribute you want.
 
 **Example of data[i]:**
 
-{'DayOfWeek': 5, 'Customers': 625, 'StateHoliday': '0', 'Promo': 1, 'Sales': 6064, 'Date': '2015-07-31', 'Open': 1, 'SchoolHoliday': '1', 'Store': 2}
+	{'Customers': 555,
+	 'Day': 3,
+	 'DayOfWeek': 5,
+	 'Month': 7,
+	 'Open': 1,
+	 'Promo': 1,
+	 'Sales': 5263,
+	 'SchoolHoliday': 1,
+	 'StateHoliday': 0,
+	 'Store': 1,
+	 'Year': 2015}
 
 'Store' is int
 
 'DayOfWeek' is int
 
-'Date' is string
+'Year' is int
+
+'Month' is int
+
+'Day' is int
 
 'Sales' is int
 
@@ -44,26 +58,27 @@ In every list, you can use data[i]['Sales'] to choose the attribute you want.
 
 'Open' is int
 
-'StateHoliday' is string
+'StateHoliday' is int (0,1,2,3)
 
-'SchoolHoliday' is string
+'SchoolHoliday' is int (0,1)
 
 
 ## Features
-[d['Store'], d['DayOfWeek'], d['Customers'], d['Promo'], d['Open']]
+features = ['store Average', 'store Daily Average', 'storeDayCustomers', 'Promo', 'Open', 'SchoolHoliday', 'StateHoliday', 'Month', 'Day']
 
-The importance:
-[ 0.10359769,  0.06754357,  0.58253376,  0.06260609,  0.18371888]
-
-HOWEVER, there is no Customers info in test dataset.
-
+featureImportances = [ 0.1236776 ,  0.3299248 ,  0.14548241,  0.08983272,  0.25383252,
+        0.0025327 ,  0.01072449,  0.03096311,  0.01302964]
+        
+![](figure_1.png)
 
 ## Reference
 [How to read and write .csv in python](https://docs.python.org/2/library/csv.html)
 
 ## Submission Log
 
-([d['Store'], d['DayOfWeek'], storeDayCustomers[d['Store']][d['DayOfWeek']], d['Promo'], d['Open']]) (n_estimators=200, n_jobs = -1, max_features = 'sqrt')
+([d['Store'], d['DayOfWeek'], storeDayCustomers[d['Store']][d['DayOfWeek']], d['Promo'], d['Open']])
+
+(n_estimators=200, n_jobs = -1, max_features = 'sqrt')
 
 Training error 0.0544613850044
 
@@ -71,3 +86,28 @@ Validation error 0.192662345153
 
 Test error 0.19773
 
+---
+
+X.append( [sum(storeAverage[d['Store']]) / len(storeAverage[d['Store']]), storeAverage[d['Store']][d['DayOfWeek']], storeDayCustomers[d['Store']][d['DayOfWeek']], d['Promo'], d['Open'], d['SchoolHoliday'], d['StateHoliday'], d['Month'], d['Day']]) 
+
+estimator = RandomForestRegressor(n_estimators=10, n_jobs = -1, max_features = 'sqrt')
+
+
+Training error 0.134116155801
+
+Validation error 0.139443962653
+
+Test error 0.15397
+
+---
+
+X.append( [sum(storeAverage[d['Store']]) / len(storeAverage[d['Store']]), storeAverage[d['Store']][d['DayOfWeek']], storeDayCustomers[d['Store']][d['DayOfWeek']], d['Promo'], d['Open'], d['SchoolHoliday'], d['StateHoliday'], d['Month'], d['Day']]) 
+
+estimator = RandomForestRegressor(n_estimators=100, n_jobs = -1, max_features = 'sqrt')
+
+
+Training error 0.136834269823
+
+Validation error 0.136433584044
+
+Test error 0.15127
