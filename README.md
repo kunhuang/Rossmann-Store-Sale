@@ -111,3 +111,60 @@ Training error 0.136834269823
 Validation error 0.136433584044
 
 Test error 0.15127
+
+---
+
+[storeAverage[d['Store']], storeDayAverage[d['Store']][d['DayOfWeek']], storeDayCustomers[d['Store']][d['DayOfWeek']], d['Promo'], d['Open'], d['SchoolHoliday'], d['StateHoliday'], d['Month'], d['Day']])
+
+estimator = RandomForestRegressor(n_estimators=10, n_jobs = -1, max_features = 'sqrt')
+
+Training error 0.147619109854
+
+Validation error 0.138442256117
+
+Training error 0.144138207301
+
+Validation error 0.137066365827
+
+[storeAverage[d['Store']], storeDayAverage[d['Store']][d['DayOfWeek']], [d['DayOfWeek']], d['Promo'], d['Open'], d['SchoolHoliday'], d['StateHoliday'], d['Month'], d['Day']])
+
+estimator = RandomForestRegressor(n_estimators=10, n_jobs = -1, max_features = 'sqrt')
+
+Training error 0.145246249422
+
+Validation error 0.139109906463
+
+Training error 0.1475501462
+
+Validation error 0.137777615749
+
+
+---
+
+[storeAverage[d['Store']], storeDayAverage[d['Store']][d['DayOfWeek']], [d['DayOfWeek']], d['Promo'], d['Open'], d['SchoolHoliday'], d['StateHoliday'], d['Month'], d['Day']])
+
+estimator = RandomForestRegressor(n_estimators=100, n_jobs = -1, max_features = 'sqrt')
+
+Training error 0.14051530975
+
+Validation error 0.136242333983
+
+Test error 0.15091
+
+---
+
+
+Reading Done!
+Preprocessing Done!
+5773.81897231
+Training error 0.144995347151
+Validation error 0.136204154722
+Reading Done!
+Test Data is ready!
+Finished writing!
+[Finished in 224.0s]
+
+
+---
+
+

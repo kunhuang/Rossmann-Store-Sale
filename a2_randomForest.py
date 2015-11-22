@@ -95,15 +95,15 @@ for d in data:
 storeAverage = map(lambda x,y:0 if y == 0 else 1.0*x/y, storeAverage, storeOpenDays)
 
 ### day average in each store
-storeAverage = [[0 for col in range(8)] for row in range(n+1)]
+storeDayAverage = [[0 for col in range(8)] for row in range(n+1)]
 storeOpenDays = [[0 for col in range(8)] for row in range(n+1)]
 for d in data:
     if d['Open'] == 1:
-        storeAverage[d['Store']][d['DayOfWeek']] += d['Sales']
+        storeDayAverage[d['Store']][d['DayOfWeek']] += d['Sales']
         storeOpenDays[d['Store']][d['DayOfWeek']] += 1
 for store in range(len(storeAverage)):
     for day in range(1,8):
-        storeAverage[store][day] = 0 if storeOpenDays[store][day] == 0 else 1.0 * storeAverage[store][day]/storeOpenDays[store][day]
+        storeDayAverage[store][day] = 0 if storeOpenDays[store][day] == 0 else 1.0 * storeDayAverage[store][day]/storeOpenDays[store][day]
 
 ### day average customers in each store
 storeDayCustomers = [[0 for col in range(8)] for row in range(n+1)]
@@ -119,7 +119,7 @@ validData, trainData = splitTrainData(data)
 X_train = [];
 y_train = [];
 for d in trainData:
-    X_train.append( [sum(storeAverage[d['Store']]) / len(storeAverage[d['Store']]), storeAverage[d['Store']][d['DayOfWeek']], storeDayCustomers[d['Store']][d['DayOfWeek']], d['Promo'], d['Open'], d['SchoolHoliday'], d['StateHoliday'], d['Month'], d['Day']])
+    X_train.append( [storeAverage[d['Store']], storeDayAverage[d['Store']][d['DayOfWeek']], storeDayCustomers[d['Store']][d['DayOfWeek']], d['Promo'], d['Open'], d['SchoolHoliday'], d['StateHoliday'], d['Month'], d['Day']])
     y_train.append(d['Sales'])
 
 ### Random Forest
@@ -138,7 +138,7 @@ print 'Training error', rmspe(y_train, yp)
 X_valid = [];
 y_valid = [];
 for d in validData:
-    X_valid.append( [sum(storeAverage[d['Store']]) / len(storeAverage[d['Store']]), storeAverage[d['Store']][d['DayOfWeek']], storeDayCustomers[d['Store']][d['DayOfWeek']], d['Promo'], d['Open'], d['SchoolHoliday'], d['StateHoliday'], d['Month'], d['Day']])
+    X_valid.append( [storeAverage[d['Store']], storeDayAverage[d['Store']][d['DayOfWeek']], storeDayCustomers[d['Store']][d['DayOfWeek']], d['Promo'], d['Open'], d['SchoolHoliday'], d['StateHoliday'], d['Month'], d['Day']])
     y_valid.append(d['Sales'])
 yp_valid = estimator.predict(X_valid)
 print 'Validation error', rmspe(y_valid, yp_valid)
@@ -150,7 +150,7 @@ testData = preprocessTestData(rawTestData)
 ### Predict
 X = []
 for d in testData:
-    X.append( [sum(storeAverage[d['Store']]) / len(storeAverage[d['Store']]), storeAverage[d['Store']][d['DayOfWeek']], storeDayCustomers[d['Store']][d['DayOfWeek']], d['Promo'], d['Open'], d['SchoolHoliday'], d['StateHoliday'], d['Month'], d['Day']])
+    X.append( [storeAverage[d['Store']], storeDayAverage[d['Store']][d['DayOfWeek']], storeDayCustomers[d['Store']][d['DayOfWeek']], d['Promo'], d['Open'], d['SchoolHoliday'], d['StateHoliday'], d['Month'], d['Day']])
 prediction = estimator.predict(X)
 ### Write the answer
 writeCSV('predict.csv', prediction)
