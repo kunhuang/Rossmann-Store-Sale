@@ -3,18 +3,27 @@ from helper import *
 def makeXy(data):
     X = [];  y = [];
     for d in data:
-        if storeInfo[d['Store']]['CompetitionOpenSinceYear'] > 0:
-            CompetitionOpenDays = (datetime.datetime(storeInfo[d['Store']]['CompetitionOpenSinceYear'], 
-                                                    storeInfo[d['Store']]['CompetitionOpenSinceMonth'], 1)
+        store = d['Store']
+        
+        if storeInfo[store]['CompetitionOpenSinceYear'] > 0:
+            CompetitionOpenDays = (datetime.datetime(storeInfo[store]['CompetitionOpenSinceYear'], 
+                                                    storeInfo[store]['CompetitionOpenSinceMonth'], 1)
                                 - datetime.datetime(d['Year'], d['Month'], d['Day']) ).days
             CompetitionOpenDays = 0.0 if CompetitionOpenDays < 0 else CompetitionOpenDays + 1.0
         else:
             CompetitionOpenDays = 0.0
-        X.append( [storeAverage[d['Store']], storeDayAverage[d['Store']][d['DayOfWeek']], 
-                         storeDayCustomers[d['Store']][d['DayOfWeek']], d['Promo'], d['Open'], 
+        
+        p2 = 0
+        if promo2[store]['Promo2']:
+            if (datetime.datetime(d['Year'], d['Month'], d['Day']) - promo2[store]['sinceDay']).days >= 0:
+                if d['Month'] in promo2[store]['months']:
+                    p2 = 1
+        
+        X.append( [storeAverage[store], storeDayAverage[store][d['DayOfWeek']], 
+                         storeDayCustomers[store][d['DayOfWeek']], d['Promo'], d['Open'], 
                          d['SchoolHoliday'], d['StateHoliday'], d['Month'], d['Day'],
-                         storeInfo[d['Store']]['Assortment'], storeInfo[d['Store']]['StoreType'],
-                         storeInfo[d['Store']]['CompetitionDistance'], CompetitionOpenDays
+                         storeInfo[store]['Assortment'], storeInfo[d['Store']]['StoreType'],
+                         storeInfo[store]['CompetitionDistance'], CompetitionOpenDays, p2
                   ])
         y.append(d.get('Sales', 0))
     return X,y
@@ -63,6 +72,7 @@ for store in range(len(storeAverage)):
 ### Read extra data (Store Information)
 rawStoreInfo = readCSV('store_Add0ToBlankArea.csv')
 storeInfo = preprocessStoreInfo(rawStoreInfo)
+promo2 = getPromo2(storeInfo[1:])
 
 ### Make the train x and y
 validData, trainData = splitTrainData(data)

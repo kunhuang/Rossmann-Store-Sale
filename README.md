@@ -3,8 +3,6 @@
 ## Timeline
 |Days reminding|Date|Event|
 |-----|-----|-----|
-|12|11.20| |
-|11|11.21| |
 |10|11.22| |
 |9|11.23| |
 |8|11.24| |
@@ -64,15 +62,20 @@ In every list, you can use data[i]['Sales'] to choose the attribute you want.
 
 
 ## Features
-features = ['store Average', 'store Daily Average', 'storeDayCustomers', 'Promo', 'Open', 'SchoolHoliday', 'StateHoliday', 'Month', 'Day']
+features = ['store Average', 'store Daily Average', 'storeDayCustomers', 'Promo', 'Open', 'School Holiday', 'State Holiday', 'Month', 'Day', 'Assortment', 'StoreType', 'Competition Distance', 'Competition Open Days', 'Promo2']
 
-featureImportances = [ 0.1236776 ,  0.3299248 ,  0.14548241,  0.08983272,  0.25383252,
-        0.0025327 ,  0.01072449,  0.03096311,  0.01302964]
+featureImportances = [ 0.12229895  0.28713269  0.17011568  0.0913555   0.21450831  0.00335524
+  0.02909692  0.02643554  0.03474152  0.00266027  0.00335206  0.01056023
+  0.00317282  0.00121427]
         
 ![](figure_1.png)
 
 ## Reference
 [How to read and write .csv in python](https://docs.python.org/2/library/csv.html)
+
+[datetime](https://docs.python.org/2/library/datetime.html#datetime-objects)
+
+[Ideas of features](https://www.kaggle.com/c/rossmann-store-sales/forums/t/17387/inputs-on-feature-engineering-for-store-prediction-regression-challenges)
 
 ## Submission Log
 
@@ -153,21 +156,6 @@ Test error 0.15091
 
 ---
 
-
-Reading Done!
-Preprocessing Done!
-5773.81897231
-Training error 0.144995347151
-Validation error 0.136204154722
-Reading Done!
-Test Data is ready!
-Finished writing!
-[Finished in 224.0s]
-
-
----
-
-
 X.append( [storeAverage[d['Store']], storeDayAverage[d['Store']][d['DayOfWeek']], storeDayCustomers[d['Store']][d['DayOfWeek']], d['Promo'], d['Open'], d['SchoolHoliday'], d['StateHoliday'], d['Month'], d['Day'], storeInfo[d['Store']]['Assortment'], storeInfo[d['Store']]['StoreType'], storeInfo[d['Store']]['CompetitionDistance'], CompetitionOpenDays 
 
 estimator = RandomForestRegressor(n_estimators=100, n_jobs = -1, max_features = 'sqrt')
@@ -179,3 +167,27 @@ Validation error 0.12779291288
 Test error 0.13645
 
 ---
+
+Add p2
+
+estimator = RandomForestRegressor(n_estimators=100, n_jobs = -1, max_features = 'sqrt')
+
+Training error 0.066
+
+Validation error 0.1259
+
+Test error 0.13586
+
+---
+
+estimator = RandomForestRegressor(n_estimators=300, max_depth = 30, n_jobs = -1, max_features = 'sqrt')
+
+Training error 0.0783227771002
+
+Validation error 0.124333540239
+
+Test error 0.13499
+
+---
+
+
