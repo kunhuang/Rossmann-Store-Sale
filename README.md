@@ -168,3 +168,14 @@ Finished writing!
 ---
 
 
+X.append( [storeAverage[d['Store']], storeDayAverage[d['Store']][d['DayOfWeek']], storeDayCustomers[d['Store']][d['DayOfWeek']], d['Promo'], d['Open'], d['SchoolHoliday'], d['StateHoliday'], d['Month'], d['Day'], storeInfo[d['Store']]['Assortment'], storeInfo[d['Store']]['StoreType'], storeInfo[d['Store']]['CompetitionDistance'], CompetitionOpenDays 
+
+estimator = RandomForestRegressor(n_estimators=100, n_jobs = -1, max_features = 'sqrt')
+
+Training error 0.0690124426818
+
+Validation error 0.12779291288
+
+Test error 0.13645
+
+---
