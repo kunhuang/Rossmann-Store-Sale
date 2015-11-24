@@ -96,7 +96,7 @@ X_train, y_train = makeXy(trainData)
 
 ### Random Forest
 from sklearn.ensemble import RandomForestRegressor
-estimator = RandomForestRegressor(n_estimators=200, n_jobs = -1, max_features = 'sqrt')
+estimator = RandomForestRegressor(n_estimators=10, n_jobs = -1, max_features = 'sqrt')
 estimator.fit(X_train, y_train)
 
 ### Training error

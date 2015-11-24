@@ -219,3 +219,14 @@ Validation error 0.120053461388
 Test error 0.13473 
 
 ---
+
+estimator = RandomForestRegressor(n_estimators=1000, max_depth = 25, n_jobs = -1, max_features = 'sqrt')
+
+Training error 0.103575237162
+
+Validation error 0.117227573222
+
+Test error 0.13120
+
+---
+
