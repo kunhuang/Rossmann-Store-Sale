@@ -99,7 +99,8 @@ rawTestData = readCSV('test.csv')
 testData = preprocessTestData(rawTestData)
 
 OpenedDays = getOpenedDays(data, testData)
-print OpenedDays[20]
+for i in range(alldays):
+    print startDate + datetime.timedelta(i), OpenedDays[20][i]
 
 ### global average
 globalAverage = 1.0 * sum(map(lambda x:x['Sales'], data)) / len(data)

@@ -26,10 +26,16 @@ def makeXy(data):
                          d['SchoolHoliday'], d['StateHoliday'], d['Month'], d['Day'],
                          storeInfo[store]['Assortment'], storeInfo[store]['StoreType'],
                          storeInfo[store]['CompetitionDistance'], CompetitionOpenDays, p2,
-                         OpenedDays[store][fromStart]
+                         float(OpenedDays[store][fromStart])
                   ])
         y.append(d.get('Sales', 0))
     return X,y
+
+def make00(data, prediction):
+    for i in range(len(data)):
+        if data[i]['Open'] == 0:
+            prediction[i] = 0
+    return prediction        
 
 ########## Model Building ##########
 ### Predefine 
@@ -90,16 +96,18 @@ X_train, y_train = makeXy(trainData)
 
 ### Random Forest
 from sklearn.ensemble import RandomForestRegressor
-estimator = RandomForestRegressor(n_estimators=100, n_jobs = -1, max_features = 'sqrt')
+estimator = RandomForestRegressor(n_estimators=200, n_jobs = -1, max_features = 'sqrt')
 estimator.fit(X_train, y_train)
 
 ### Training error
 yp_train = estimator.predict(X_train)
+yp_train = make00(trainData, yp_train)
 print 'Training error', rmspe(y_train, yp_train)
 
 ### Validation error
 X_valid, y_valid = makeXy(validData)
 yp_valid = estimator.predict(X_valid)
+yp_valid = make00(validData, yp_valid)
 print 'Validation error', rmspe(y_valid, yp_valid)
 
 
@@ -107,8 +115,7 @@ print 'Validation error', rmspe(y_valid, yp_valid)
 ### Predict and Write the answer
 X, _ = makeXy(testData)
 prediction = estimator.predict(X)
+prediction = make00(testData, prediction)
 writeCSV('predict.csv', prediction)
-
-
 
 

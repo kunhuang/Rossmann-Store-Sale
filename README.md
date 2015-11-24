@@ -208,3 +208,14 @@ Test error 0.13630 (no improvement)
 
 ---
 
+float (OpenedDays)
+
+100
+
+Training error 0.0629593934218
+
+Validation error 0.120053461388
+
+Test error 0.13473 
+
+---

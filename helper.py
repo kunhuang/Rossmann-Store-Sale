@@ -5,6 +5,7 @@ import datetime
 ########## Predefine ##########
 startDate = datetime.date(2012,12,31)
 endDate = datetime.date(2015,9,30)
+alldays = (endDate - startDate).days
 storeNums = 1115
 
 ########## Functions ##########
@@ -95,7 +96,7 @@ def getPromo2(data):
         storePromo2 = {}
         storePromo2['Promo2'] = d['Promo2']
         if storePromo2['Promo2']:
-            storePromo2['sinceDay'] = datetime.timedelta( (d['Promo2SinceWeek']-1) * 7 ) + datetime.datetime(d['Promo2SinceYear'], 1, 1)
+            storePromo2['sinceDay'] = datetime.timedelta( (d['Promo2SinceWeek']-1) * 7 ) + datetime.date(d['Promo2SinceYear'], 1, 1)
             months = d['PromoInterval'][1:-1].split(';')
             storePromo2['months'] = []
             for month in months:
@@ -121,7 +122,6 @@ def rmspe(y,yp):
     return math.sqrt( sum(map(lambda y, yhat:0 if y == 0 else (1.0*(y-yhat)/y)**2, y,yp )) / n)    
 
 def getOpenedDays(trainData, testData):
-    alldays = (endDate - startDate).days
     OpenedDays = []
     for i in range(storeNums+1):
         OpenedDays.append([0 for j in range(alldays)])
