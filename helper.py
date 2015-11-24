@@ -2,6 +2,11 @@ import math
 import csv
 import datetime
 
+########## Predefine ##########
+startDate = datetime.date(2012,12,31)
+endDate = datetime.date(2015,9,30)
+storeNums = 1115
+
 ########## Functions ##########
 ### read .csv file and return a list of list, a line in file is a list.
 def readCSV(filename):
@@ -23,6 +28,7 @@ def preprocess(raw):
                 d['Year'] = int(row[i][0:4])
                 d['Month'] = int(row[i][5:7])
                 d['Day'] = int(row[i][8:10])
+                d[name] = datetime.date(d['Year'], d['Month'], d['Day'])
             elif i == 7:
                 if row[i][1:-1] == "0":
                     d[name] = 0
@@ -48,6 +54,7 @@ def preprocessTestData(test):
                 d['Year'] = int(row[i][0:4])
                 d['Month'] = int(row[i][5:7])
                 d['Day'] = int(row[i][8:10])
+                d[name] = datetime.date(d['Year'], d['Month'], d['Day'])
             elif i == 6:
                 if row[i][1:-1] == "0":
                     d[name] = 0
@@ -112,3 +119,22 @@ def writeCSV(filename, prediction):
 def rmspe(y,yp):
     n = len(y)
     return math.sqrt( sum(map(lambda y, yhat:0 if y == 0 else (1.0*(y-yhat)/y)**2, y,yp )) / n)    
+
+def getOpenedDays(trainData, testData):
+    alldays = (endDate - startDate).days
+    OpenedDays = []
+    for i in range(storeNums+1):
+        OpenedDays.append([0 for j in range(alldays)])
+
+    def addDays(data):
+        N = len(data)
+        for i in range(N-1,-1,-1):
+            store = data[i]['Store']
+            day = (data[i]['Date'] - startDate).days
+            OpenedDays[store][day] = OpenedDays[store][day-1] + 1 if data[i]['Open'] else 0
+
+    addDays(trainData)
+    addDays(testData)
+
+    return OpenedDays
+

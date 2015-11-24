@@ -190,4 +190,21 @@ Test error 0.13499
 
 ---
 
+add OpenedDays[store][fromStart]
+
+10
+
+Training error 0.078
+
+Validation error 0.124552683367
+
+100
+
+Training error 0.068570672611
+
+Validation error 0.120305086712 (improved)
+
+Test error 0.13630 (no improvement)
+
+---
 

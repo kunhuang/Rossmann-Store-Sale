@@ -4,26 +4,29 @@ def makeXy(data):
     X = [];  y = [];
     for d in data:
         store = d['Store']
+        today = datetime.date(d['Year'], d['Month'], d['Day'])
+        fromStart = (today - startDate).days
         
         if storeInfo[store]['CompetitionOpenSinceYear'] > 0:
-            CompetitionOpenDays = (datetime.datetime(storeInfo[store]['CompetitionOpenSinceYear'], 
+            CompetitionOpenDays = (datetime.date(storeInfo[store]['CompetitionOpenSinceYear'], 
                                                     storeInfo[store]['CompetitionOpenSinceMonth'], 1)
-                                - datetime.datetime(d['Year'], d['Month'], d['Day']) ).days
+                                - datetime.date(d['Year'], d['Month'], d['Day']) ).days
             CompetitionOpenDays = 0.0 if CompetitionOpenDays < 0 else CompetitionOpenDays + 1.0
         else:
             CompetitionOpenDays = 0.0
         
         p2 = 0
         if promo2[store]['Promo2']:
-            if (datetime.datetime(d['Year'], d['Month'], d['Day']) - promo2[store]['sinceDay']).days >= 0:
+            if (today - promo2[store]['sinceDay']).days >= 0:
                 if d['Month'] in promo2[store]['months']:
                     p2 = 1
-        
+
         X.append( [storeAverage[store], storeDayAverage[store][d['DayOfWeek']], 
                          storeDayCustomers[store][d['DayOfWeek']], d['Promo'], d['Open'], 
                          d['SchoolHoliday'], d['StateHoliday'], d['Month'], d['Day'],
-                         storeInfo[store]['Assortment'], storeInfo[d['Store']]['StoreType'],
-                         storeInfo[store]['CompetitionDistance'], CompetitionOpenDays, p2
+                         storeInfo[store]['Assortment'], storeInfo[store]['StoreType'],
+                         storeInfo[store]['CompetitionDistance'], CompetitionOpenDays, p2,
+                         OpenedDays[store][fromStart]
                   ])
         y.append(d.get('Sales', 0))
     return X,y
@@ -35,6 +38,13 @@ n = 1115 #Numbers of store
 ### Read train data
 rawData = readCSV('train.csv')
 data = preprocess(rawData)
+
+### Read test data
+rawTestData = readCSV('test.csv')
+testData = preprocessTestData(rawTestData)
+
+### Preprocess to extract extra features
+OpenedDays = getOpenedDays(data, testData)
 
 ### global average
 globalAverage = 1.0 * sum(map(lambda x:x['Sales'], data)) / len(data)
@@ -94,10 +104,6 @@ print 'Validation error', rmspe(y_valid, yp_valid)
 
 
 ########## Output ##########
-### Read test data
-rawTestData = readCSV('test.csv')
-testData = preprocessTestData(rawTestData)
-
 ### Predict and Write the answer
 X, _ = makeXy(testData)
 prediction = estimator.predict(X)
