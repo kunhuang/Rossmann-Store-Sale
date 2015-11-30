@@ -1,3 +1,4 @@
+import pdb
 import math
 import csv
 import datetime
@@ -73,19 +74,31 @@ def preprocessTestData(test):
 
 def preprocessStoreInfo(raw):
     dataDict = [0]
-    names = map(lambda x:x[1:-1], raw.pop(0))
+    # names = map(lambda x:x[1:-1], raw.pop(0))
+    names = raw.pop(0)
+    
+    from sklearn import preprocessing
+    le = preprocessing.LabelEncoder()
+    le.fit(map(lambda x: x[10], raw))
+    
     for row in raw:
         d = {}; i = 0
-        for name in names:
-            if (i == 1) or (i == 2):
-                d[name] = ord(row[i][1:-1]) - ord("a") + 1
-            elif (i == 9):
-                d[name] = row[i]
-            else:
-                d[name] = int(row[i])
-            i += 1
-        dataDict.append(dict(d))
-    
+        try:
+            for name in names:
+                if (i == 1) or (i == 2):
+                    # d[name] = ord(row[i][1:-1]) - ord("a") + 1
+                    d[name] = ord(row[i]) - ord("a") + 1
+                elif (i == 9):
+                    d[name] = row[i]
+                elif (i == 10):
+                    d[name] = le.transform([row[i]])[0]
+                else:
+                    d[name] = int(row[i])
+                i += 1
+            dataDict.append(dict(d))
+        except:
+            print "Wrong"
+
     print "Store Info is ready!"
     return dataDict
 
@@ -97,7 +110,8 @@ def getPromo2(data):
         storePromo2['Promo2'] = d['Promo2']
         if storePromo2['Promo2']:
             storePromo2['sinceDay'] = datetime.timedelta( (d['Promo2SinceWeek']-1) * 7 ) + datetime.date(d['Promo2SinceYear'], 1, 1)
-            months = d['PromoInterval'][1:-1].split(';')
+            # months = d['PromoInterval'][1:-1].split(';')
+            months = d['PromoInterval'].split(';')
             storePromo2['months'] = []
             for month in months:
                 storePromo2['months'].append(monthsTable[month])

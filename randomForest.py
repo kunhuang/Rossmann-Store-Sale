@@ -26,7 +26,8 @@ def makeXy(data):
                          d['SchoolHoliday'], d['StateHoliday'], d['Month'], d['Day'],
                          storeInfo[store]['Assortment'], storeInfo[store]['StoreType'],
                          storeInfo[store]['CompetitionDistance'], CompetitionOpenDays, p2,
-                         float(OpenedDays[store][fromStart])
+                         float(OpenedDays[store][fromStart]),
+                         storeInfo[store]['State']
                   ])
         y.append(d.get('Sales', 0))
     return X,y
@@ -86,7 +87,7 @@ for store in range(len(storeAverage)):
         storeDayCustomers[store][day] = 0 if storeOpenDays[store][day] == 0 else 1.0 * storeDayCustomers[store][day]/storeOpenDays[store][day]
 
 ### Read extra data (Store Information)
-rawStoreInfo = readCSV('store_Add0ToBlankArea.csv')
+rawStoreInfo = readCSV('store_Add0ToBlankArea_withState.csv')
 storeInfo = preprocessStoreInfo(rawStoreInfo)
 promo2 = getPromo2(storeInfo[1:])
 
