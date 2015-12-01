@@ -230,3 +230,92 @@ Test error 0.13120
 
 ---
 
+no float
+
+Training error 0.0730090738124
+Validation error 0.120067460014
+
+float(OpenedDays)
+
+Training error 0.0733889650528
+Validation error 0.119943152507
+
+float(CompetitionOpenDays)
+
+Training error 0.0756875602696
+Validation error 0.120107902462
+
+float(day)
+
+Training error 0.0687997031897
+Validation error 0.119936327942
+
+10 Trees & change as storeMonthCustomers
+
+Training error 0.0667658971195
+Validation error 0.121315478596
+
+10 Trees & no change (storeDaysCustomers)
+
+Training error 0.0866453651495
+Validation error 0.123202078805
+
+10 Trees & #OpenedDays[store][fromStart], nextCloseDay[store][fromStart] & storeMonthCustomers
+
+Validation error 0.128
+
+---
+
+[storeAverage[store], storeDayAverage[store][d['DayOfWeek']], 
+                         storeMonthCustomers[store][d['Month']], d['Promo'], d['Open'], 
+                         d['SchoolHoliday'], d['StateHoliday'], d['Month'], d['Day'],
+                         storeInfo[store]['Assortment'], storeInfo[store]['StoreType'],
+                         storeInfo[store]['CompetitionDistance'], CompetitionOpenDays, p2
+                         #OpenedDays[store][fromStart], nextCloseDay[store][fromStart]
+                  ])
+                  
+100                  
+
+Training error 0.0705918796486
+
+Validation error 0.124653387811
+
+Test error 0.13608
+
+
+---
+
+( [storeAverage[store], storeDayAverage[store][d['DayOfWeek']], 
+                         storeMonthCustomers[store][d['Month']], d['Promo'], d['Open'], 
+                         d['SchoolHoliday'], d['StateHoliday'], d['Month'], d['Day'],
+                         storeInfo[store]['Assortment'], storeInfo[store]['StoreType'],
+                         storeInfo[store]['CompetitionDistance'], CompetitionOpenDays, p2,
+                         float(OpenedDays[store][fromStart])#, nextCloseDay[store][fromStart]
+                  ])
+                  
+100                  
+
+Training error 0.0720684609859
+
+Validation error 0.11954758861
+
+---
+
+X.append( [storeAverage[store], storeDayAverage[store][d['DayOfWeek']], 
+                         storeMonthCustomers[store][d['Month']], d['Promo'], d['Open'], 
+                         d['SchoolHoliday'], d['StateHoliday'], d['Month'], d['Day'],
+                         storeInfo[store]['Assortment'], storeInfo[store]['StoreType'],
+                         storeInfo[store]['CompetitionDistance'], CompetitionOpenDays, p2,
+                         float(OpenedDays[store][fromStart]), float(nextCloseDay[store][fromStart])
+                  ])
+                  
+100                  
+
+Training error 0.0720852482742
+
+Validation error 0.116741940894
+
+Test error 0.13589
+
+---
+

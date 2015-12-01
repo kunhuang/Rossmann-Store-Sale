@@ -77,7 +77,7 @@
 #         N = len(data)
 #         for i in range(N-1,-1,-1):
 #             store = data[i]['Store']
-#             day = (data[i]['Date'] - start).days
+#             day = (data[i]['Date'] - start).daOpenedDays[store]ys
 #             OpenedDays[store][day] = OpenedDays[store][day-1] + 1 if data[i]['Open'] else 0
 
 #     addDays(trainData)
@@ -102,6 +102,6 @@ OpenedDays = getOpenedDays(data, testData)
 for i in range(alldays):
     print startDate + datetime.timedelta(i), OpenedDays[20][i]
 
-### global average
-globalAverage = 1.0 * sum(map(lambda x:x['Sales'], data)) / len(data)
-print globalAverage
+nextCloseDay = getNextCloseDay(OpenedDays)
+for i in range(alldays):
+    print startDate + datetime.timedelta(i), nextCloseDay[20][i]

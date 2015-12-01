@@ -144,11 +144,22 @@ def getOpenedDays(trainData, testData):
         N = len(data)
         for i in range(N-1,-1,-1):
             store = data[i]['Store']
-            day = (data[i]['Date'] - startDate).days
+            day = (data[i]['Date'] - startDate).days # int
             OpenedDays[store][day] = OpenedDays[store][day-1] + 1 if data[i]['Open'] else 0
 
     addDays(trainData)
     addDays(testData)
 
     return OpenedDays
+
+def getNextCloseDay(OpenedDays):
+    nextCloseDay = []
+    for i in range(storeNums+1):
+        nextCloseDay.append([0 for j in range(alldays)])
+    for store in range(len(OpenedDays)):
+        for day in range(len(OpenedDays[store])-1, -1, -1):
+            nextCloseDay[store][day] = nextCloseDay[store][day+1] + 1 if OpenedDays[store][day] > 0 else 0
+
+    return nextCloseDay
+
 

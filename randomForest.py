@@ -14,7 +14,7 @@ def makeXy(data):
             CompetitionOpenDays = 0.0 if CompetitionOpenDays < 0 else CompetitionOpenDays + 1.0
         else:
             CompetitionOpenDays = 0.0
-        
+
         p2 = 0
         if promo2[store]['Promo2']:
             if (today - promo2[store]['sinceDay']).days >= 0:
@@ -22,20 +22,20 @@ def makeXy(data):
                     p2 = 1
 
         X.append( [storeAverage[store], storeDayAverage[store][d['DayOfWeek']], 
-                         storeDayCustomers[store][d['DayOfWeek']], d['Promo'], d['Open'], 
-                         d['SchoolHoliday'], d['StateHoliday'], d['Month'], d['Day'],
+                         storeMonthCustomers[store][d['Month']], d['Promo'], d['Open'], 
+                         d['SchoolHoliday'], d['StateHoliday'], d['Month'], float(d['Day']),
                          storeInfo[store]['Assortment'], storeInfo[store]['StoreType'],
                          storeInfo[store]['CompetitionDistance'], CompetitionOpenDays, p2,
                          float(OpenedDays[store][fromStart]),
                          storeInfo[store]['State']
                   ])
-        y.append(d.get('Sales', 0))
+        y.append(d.get('Sales', 0.0))
     return X,y
 
 def make00(data, prediction):
     for i in range(len(data)):
         if data[i]['Open'] == 0:
-            prediction[i] = 0
+            prediction[i] = 0.0
     return prediction        
 
 ########## Model Building ##########
@@ -52,6 +52,7 @@ testData = preprocessTestData(rawTestData)
 
 ### Preprocess to extract extra features
 OpenedDays = getOpenedDays(data, testData)
+nextCloseDay = getNextCloseDay(OpenedDays)
 
 ### global average
 globalAverage = 1.0 * sum(map(lambda x:x['Sales'], data)) / len(data)
@@ -64,18 +65,18 @@ for d in data:
     if d['Open'] == 1:
         storeAverage[d['Store']] += d['Sales']
         storeOpenDays[d['Store']] += 1
-storeAverage = map(lambda x,y:0 if y == 0 else 1.0*x/y, storeAverage, storeOpenDays)
+storeAverage = map(lambda x,y:0.0 if y == 0 else 1.0*x/y, storeAverage, storeOpenDays)
 
 ### day average in each store
-storeDayAverage = [[0 for col in range(8)] for row in range(n+1)]
-storeOpenDays = [[0 for col in range(8)] for row in range(n+1)]
+storeDayAverage = [[0.0 for col in range(8)] for row in range(n+1)]
+storeOpenDays = [[0.0 for col in range(8)] for row in range(n+1)]
 for d in data:
     if d['Open'] == 1:
         storeDayAverage[d['Store']][d['DayOfWeek']] += d['Sales']
         storeOpenDays[d['Store']][d['DayOfWeek']] += 1
 for store in range(len(storeAverage)):
     for day in range(1,8):
-        storeDayAverage[store][day] = 0 if storeOpenDays[store][day] == 0 else 1.0 * storeDayAverage[store][day]/storeOpenDays[store][day]
+        storeDayAverage[store][day] = 0.0 if storeOpenDays[store][day] == 0 else 1.0 * storeDayAverage[store][day]/storeOpenDays[store][day]
 
 ### day average customers in each store
 storeDayCustomers = [[0 for col in range(8)] for row in range(n+1)]
@@ -84,7 +85,19 @@ for d in data:
         storeDayCustomers[d['Store']][d['DayOfWeek']] += d['Customers']
 for store in range(len(storeAverage)):
     for day in range(1,8):
-        storeDayCustomers[store][day] = 0 if storeOpenDays[store][day] == 0 else 1.0 * storeDayCustomers[store][day]/storeOpenDays[store][day]
+        storeDayCustomers[store][day] = 0.0 if storeOpenDays[store][day] == 0 else 1.0 * storeDayCustomers[store][day]/storeOpenDays[store][day]
+
+### monthly average customers in each store
+storeMonthCustomers = [[0.0 for col in range(32)] for row in range(n+1)]
+storeOpenMonth = [[0.0 for col in range(32)] for row in range(n+1)]
+for d in data:
+    if d['Open'] == 1:
+        storeMonthCustomers[d['Store']][d['Month']] += d['Customers']
+        storeOpenMonth[d['Store']][d['Month']] += 1
+for store in range(len(storeAverage)):
+    for month in range(1,32):
+        storeMonthCustomers[store][month] = 0.0 if storeOpenMonth[store][month] == 0 else 1.0 * storeMonthCustomers[store][month]/storeOpenMonth[store][month]
+
 
 ### Read extra data (Store Information)
 rawStoreInfo = readCSV('store_Add0ToBlankArea_withState.csv')

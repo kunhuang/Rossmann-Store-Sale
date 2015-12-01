@@ -1,0 +1,85 @@
+\documentclass[jou,apacite]{apa6}
+
+\title{Forecasting sales using store, promotion, and competitor data}
+\shorttitle{APA style}
+
+\threeauthors{Qianren Zhou}{Kun Huang}{Di Huang}
+\threeaffiliations{Computer Science and Engineering \\ University of California, San Diego \\ qiz122@ucsd.edu}{Computer Science and Engineering \\ University of California, San Diego \\ kuh004@ucsd.edu}{Computer Science and Engineering \\ University of California, San Diego \\ dih024@ucsd.edu}
+
+% \abstract{CSE 255, Fall 2015: Assignment 2}
+
+\rightheader{APA style}
+% \leftheader{Author One}
+
+\begin{document}
+\maketitle    
+                        
+\section{Abstract}
+Sales forecasting is a common topic in business. Our task is predicting a famous drug company daily sales for 1,115 stores located across Germany for six weeks in advance. Store sales are influenced by many factors, including promotions, competition, school and state holidays, seasonality, and locality. Our project aims to create a robust prediction model. Our model performs well in this sales forecasting competition with resulting in ranking at [RANKING HERE] and it is found that [FEATURES NAMEs] affect drugs sales the most. 
+% Sample text. Sample text. Citation of Einstein paper~\cite{Einstein}. Citation of Freud book~\cite{Freud}.
+
+\section{Introduction}
+
+TBD
+
+\section{Dataset Identification and Analysis}
+Our dataset comes from kaggle competition "Rossmann Store Sales". The training data includes "Store", "Day Of Week", "Date", "Sales", "Customers", "Open", "Promo", "State Holiday" and "School Holiday". 
+
+The following is a sample of training data.\\
+
+1,5,2015-07-31,5263,555,1,1,"0","1"\\
+
+The testing data doesn't include the fields of "Sales" and "Customers". One is the field we need to forecast and the other is the field which we can't know in advance. 
+
+The following is a sample of testing data.\\
+
+1,1,4,2015-09-17,1,1,"0","0"\\
+
+The following table shows some general statistics for the data:
+
+  \begin{table}
+  \caption{Dataset statistic} 
+  \begin{tabular}{|l|l|}
+  \hline
+  STATISTICS & NUMBERS \\
+  \hline
+  Dataset size & 1017209 \\
+  \hline
+  Testing data size & 41088 \\
+  \hline
+  Total stores number & 1115 \\
+  \hline
+  Training data Time ranges & 2013-01-01 to 2015-07-31 \\
+  \hline
+  Testing data Time ranges & 2015-08-01 to 2015-09-17 \\
+  \hline  
+  Global store sales average & 5773.82 \\
+  \hline
+  \end{tabular}
+  \end{table}
+  
+
+
+\subsubsection{Sample subsubsection}
+Sample text. Sample text. Sample text. Sample text. Sample text. Sample text. 
+Sample text. Sample text. Sample text. Sample text. Sample text. Sample text. 
+
+
+% Results are presented in Table~\ref{tab1}.
+% \begin{table}[!htb]
+% \caption{Sample table.}\label{tab1}
+% \begin{tabular}{ccc}
+% \hline\\[-1.5ex]
+% AAA & BBB & CCC \\[0.5ex]
+% \hline\\[-1.5ex]
+% 1.0 & 2.0 & 3.0\\[0.5ex]
+% 1.0 & 2.0 & 3.0\\[0.5ex]
+% \hline
+% \end{tabular}
+% \end{table}
+
+
+\bibliography{sample}
+
+\end{document}
+k,6
