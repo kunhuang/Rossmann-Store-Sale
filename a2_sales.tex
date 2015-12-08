@@ -1,26 +1,30 @@
 \documentclass[jou,apacite]{apa6}
+\usepackage{graphicx} % Required to insert images
 
 \title{Forecasting sales using store, promotion, and competitor data}
-\shorttitle{APA style}
+\shorttitle{Sales Forecasting}
 
 \threeauthors{Qianren Zhou}{Kun Huang}{Di Huang}
 \threeaffiliations{Computer Science and Engineering \\ University of California, San Diego \\ qiz122@ucsd.edu}{Computer Science and Engineering \\ University of California, San Diego \\ kuh004@ucsd.edu}{Computer Science and Engineering \\ University of California, San Diego \\ dih024@ucsd.edu}
 
 % \abstract{CSE 255, Fall 2015: Assignment 2}
 
-\rightheader{APA style}
+% \rightheader{APA style}
 % \leftheader{Author One}
 
 \begin{document}
 \maketitle    
                         
 \section{Abstract}
-Sales forecasting is a common topic in business. Our task is predicting a famous drug company daily sales for 1,115 stores located across Germany for six weeks in advance. Store sales are influenced by many factors, including promotions, competition, school and state holidays, seasonality, and locality. Our project aims to create a robust prediction model. Our model performs well in this sales forecasting competition with resulting in ranking at [RANKING HERE] and it is found that [FEATURES NAMEs] affect drugs sales the most. 
-% Sample text. Sample text. Citation of Einstein paper~\cite{Einstein}. Citation of Freud book~\cite{Freud}.
+Sales forecasting is a common topic in business. Our task is predicting a famous drug company daily sales for 1,115 stores located across Germany for six weeks in advance. Store sales are influenced by many factors. Our project aims to create a robust prediction model. Our model performs well in this sales forecasting competition with resulting in ranking at 977th/3066 and it is found that Competition had opened days, the day, competition distance affect drugs sales the most. 
 
 \section{Introduction}
 
-TBD
+Rossmann operates over 3,000 drug stores in 7 European countries. The task is to predict 6 weeks of daily sales for 1,115 stores located across Germany. Store sales are influenced by many factors, including promotions, competition, school and state holidays, seasonality, and locality.  Reliable sales forecasts enable store managers to create effective staff schedules that increase productivity and motivation. 
+
+As the given feature is only store related and there is no customer related data or item related data, recommendation system is hard be applied in the problem. Besides, as the target is continuous, the problem could be a regression problem based on both categorical feature(e.g, Store Type) and continuous feature(e.g, Days). Besides, some feature could be considered as categorical as well as continuous, for example, Day in week could be considered as continuous by [1,2,3,4,5,6,7], assuming there is a relationship for adjacent days or as categorical [Mon, Tue, Wed, Thu, Fri, Sat, Sun], assuming there is not relationship between them.
+
+In the following sections, the selection and construction of features, and how previous sales forecast problems are solved, and the models fits best into this problem will be discussed.
 
 \section{Dataset Identification and Analysis}
 Our dataset comes from kaggle competition "Rossmann Store Sales". The training data includes "Store", "Day Of Week", "Date", "Sales", "Customers", "Open", "Promo", "State Holiday" and "School Holiday". 
@@ -35,7 +39,7 @@ The following is a sample of testing data.\\
 
 1,1,4,2015-09-17,1,1,"0","0"\\
 
-The following table shows some general statistics for the data:
+The Table 1 shows some general statistics for the data.
 
   \begin{table}
   \caption{Dataset statistic} 
@@ -53,33 +57,238 @@ The following table shows some general statistics for the data:
   \hline
   Testing data Time ranges & 2015-08-01 to 2015-09-17 \\
   \hline  
-  Global store sales average & 5773.82 \\
-  \hline
   \end{tabular}
   \end{table}
   
+The Table 2 shows statistics related to sales.
+  
+  \begin{table}
+  \caption{Sales statistic} 
+  \begin{tabular}{|l|l|}
+  \hline
+  STATISTICS & VALUES \\
+  \hline
+  Global store sales average & 5773.82 \\
+  \hline
+  Max daily sales & 41551 \\
+  \hline
+  Min daily sales & 46 \\
+  \hline
+  \end{tabular}
+  \end{table}
+
+\section{Previous Work}
+A lot of work has been done related to sales prediction, as it's one of the most important concern by the retailer. Sales prediction could be done by customer related features, store related features, and item related feature. For example, \cite{chen2010study} has been working on forecasting sales model on fresh food. The prediction is based on both item and customer, as when consumers are making purchases of food products, they would first consider if the foods are fresh and if they are expired. But the methodology can't feed into our problem, as only store related features are provided and customer-item prediction could not be predicted at all. Another retail sale prediction problem has been described in \cite{giering2008retail}. It's also a sales prediction problem based on customer related feature and item related feature where SVD and recommendation system is applied. Although the methodology can't be well applied in our problem, there is still inspiration from their work: using log(Sales) as the target in prediction as it might normalized the distribution.
+
+\cite{chang2008fuzzy} has described a way to make sales prediction only based on item related feature which is more similar to our problem where only store related feature is provided. In \cite{chang2008fuzzy}, it obtained \textit{ case-based reasoning model} and \textit{k-nearest neighbors algorithm} to find the most similar item with sale history, given an item without sale history. We tried \textit{k-nearest neighbors algorithm} in our dataset to find the most similar store and time information. We got some result, however, its performance is not as good as expected. The model and the result could be find in the following section. 
+
+\cite{thiesing1995parallel} has adapted \textit{Back-Propagation} as a neural network method to make sales prediction on Transputer system. The article has also described how they applied parallel computing into the model to improve the efficiency of computing.
 
 
-\subsubsection{Sample subsubsection}
-Sample text. Sample text. Sample text. Sample text. Sample text. Sample text. 
-Sample text. Sample text. Sample text. Sample text. Sample text. Sample text. 
+
+\section{Data Exploratory}
+The following subsections are trying to analyse dataset and figure out useful features that can be used to forecast sales. At first, we will attempt to extract features from training dataset. Then, in order to get more useful features, the store information will be reviewed. At last, we will try to get more information from what we have now based on store information.
+
+\subsection{Store ID}
+It is customary to think the store ID as one feature because sales may change from store to store. However, if we just use the Store ID as one feature, we will find that the correlation coefficient between Store ID and Sales is only 0.005. 
+
+One idea to make it better is using store daily sales average as the feature instead of store ID. The coefficient between store daily sales average and Sales is 0.53, which is pretty high in analysis. We can see the store daily sales average in Figure~\ref{storeAverage}
+
+    \begin{center}
+    \includegraphics[width=8cm]{storeAverage}
+    \makeatletter\def\@captype{figure}\makeatother
+    \caption{\centering Store Daily Sales Average}
+    \label{storeAverage}
+    \end{center}  
+
+\subsection{Day of Week}
+It's also easy to think that in different day of week, every store will have different sales since people get used to shop in differert days. The day of week seems to have large effect on sales as we can see that the correlation coefficient is -0.46. 
+
+Also, for day of week, we calculated the daily sales average of each store in each day of week and the correlation coefficient grows up to 0.85. 
+
+\subsection{Numbers of Customers}
+In the training dataset which represents the past information includes the numbers of customers. However, in the test dataset which provides the future information doesn't have the numbers of customers. It's logical. Therefore, in order to try to use numbers of customers as one feature, we calculated the monthly average numbers of customers for each store as one feature. However, the correlation coefficient is only 0.06. So, we give up numbers of customers as one feature.
+
+\subsection{Open}
+"Open" shows whether this store open or not in specified day. Because the sales must be 0 when the store is closed, we removed the data point with "Open = 0" and after prediction, we would change the value of sales as 0 when the "Open = 0" for testing data. 
+
+\subsection{State Holiday}
+People will have different demand for drugs during holidays. We have the information of state holiday for each store in each day. The correlation coefficient is -0.23. It shows some correlation between state holiday and sales.
+
+\subsection{School Holiday}
+We do the same thing with school holiday. However, it shows a weak correlation with sales. This correlation came out to be 0.09.
+
+\subsection{Store Type}
+There are 4 different store models. We encode them as 1,2,3,4.
+There are 1: 602, 2: 17, 3: 148, 4: 348 stores in each type store. However, The correlation coefficient is -0.01.
+
+Then we attempted to calculate the average sales for each type of stores.
+
+    \begin{center}
+    \includegraphics[width=8cm]{storeType}
+    \makeatletter\def\@captype{figure}\makeatother
+    \caption{\centering Average sales of every store type}
+    \label{storeType}
+    \end{center}  
+
+The correlation coefficient goes up to 0.14, which still shows a weak correlation with sales.
+
+\subsection{Assortment}
+Because different stores have different assortment level, we also take assortment as a feature. The correlation coefficient is 0.07. The average sales for each kind of assortment model stores is showed below.
+
+    \begin{center}
+    \includegraphics[width=8cm]{assortment}
+    \makeatletter\def\@captype{figure}\makeatother
+    \caption{\centering Average sales of every assortment level}
+    \label{assortment}
+    \end{center}  
+
+The correlation coefficient goes up to 0.10, which still shows a weak correlation with sales.
+
+\subsection{Year}
+The sales could have relationship with years, since the brand influence of this company may change from year to year, which could affect the sales. 
+
+\subsection{Month}
+Because people may tend to have a cold in winter and easy to get sunstroke in summer. So, the sales may be affected by month.
+
+\subsection{Day}
+Each single day could affect the sales. 
+
+\subsection{Competition Distance}
+It's customary to think that if there is a competition store near us, our sales could be affected since some customers would choose the competition store instead of us.
 
 
-% Results are presented in Table~\ref{tab1}.
-% \begin{table}[!htb]
-% \caption{Sample table.}\label{tab1}
-% \begin{tabular}{ccc}
-% \hline\\[-1.5ex]
-% AAA & BBB & CCC \\[0.5ex]
-% \hline\\[-1.5ex]
-% 1.0 & 2.0 & 3.0\\[0.5ex]
-% 1.0 & 2.0 & 3.0\\[0.5ex]
-% \hline
-% \end{tabular}
-% \end{table}
+\subsection{Competition had opened days}
+As we all know, when a competition store open, our sales must be affected since customers may be attracted by new stores. 
+
+\subsection{Promo}
+It indicates whether a store is running a promo on that day. As promotion would be a attracting thing for customer, it might have effect on the sales. But, we could say that because drugs are not luxuries or daily supplies, the promo wouldn't affect the sales too much. 
+
+\subsection{Promo2}
+Promo2 is an promotion. By combining \textit{Promo2}(continuing and consecutive promotion for some stores: 0 = store is not participating, 1 = store is participating), \textit{Promo2Since[Year/Week]}(describes the year and calendar week when the store started participating in Promo2), and \textit{PromoInterval}(describes the consecutive intervals Promo2 is started), we could get \textit{Promo2} which indicates whether the store has promotional 2 in specific day. Similarly to \textit{Promo}, it might have affect on the sales as well.
+
+\subsection{Store Continuously Opened Days}
+Customers and Sales may increase in the first open day and have relationship with store continuously opened days. 
+
+\subsection{Store next close day}
+Customers may go to the store before it close to buy some drugs for backup. So, the store next close day may also affect the sales. 
+
+\section{Model Selection}
+We tried several models in our experiment. The first model we tried is the linear regression. The prediction score is 0.38971 and we set it as the prediction baseline. We skipped other prediction method like logistic regression, SVC regression and directly forwarded to ensemble learning methods, which has been proved to be the best among all other approaches in our assignment1.
+
+The basic idea behind ensemble learning is like this: given the training data, ensemble learning uses multiple learning algorithms to find the best representative model for the specific amount of data. So the actual regressor method may be different for different bulk of data. Two of the most representative ensemble learning method are the random forest tree and gradient boosting tree.
+
+\subsection{Random Forest}
+Random Forest Tree tries is to construct a multitude of decision trees. Then it classifies the data into the decision tree node and for each node it calculate the mean value and use this value for prediction. Random forest tree uses random amount of data for training. With this randomized data, it is hard for random forest tree to overfit. Therefore, it is much more easier to tune the data compared to Gradient Boosting Tree.
+
+\subsection{Gradient Boosting}
+Like other boosting method, Gradient Boosting Tree also generate decision trees. However, the key idea behind Gradient Boosting Tree is that it can generate the tree as an optimization algorithm on a suitable cost function. With this idea, we can define our own loss function for optimization, which is vital for optimizing the final parameters. In random forest tree, it is hard to define our own loss function. The default loss function is to optimize the mean absolute error while the competition score is calculated by root mean square percentage error. False loss function will bias the prediction parameters.
+Finally we decided to use the Gradient Boosting Tree. 
+
+Unfortunately, Gradient Boosting Tree has its own drawbacks. First, It is more likely to overfit than random forest. It trusts every data point and tries to find optimal linear combination of trees given the train data. Second, there are more parameters in Gradient Boosting Tree. We have to tune the number of trees, maximum depth and the learning rate at the same time. For the first drawback, we can try to avoid overfitting by using the cross validation provided by sklearn. For the second method, we have to spend more time to tune it, which is tradeoff between time and accuracy.
+
+\subsection{Implementation}
+
+We learned some lessons from the previous project on assignment1. The previous implementation simply applied the sklearn packages for training and prediction, which is super slow. This time we use the xgboosting, which is faster since it is implemented in C++. Another important feature of this package is that it supports parallel computing so we can start multi-core optimization for our program.
+
+We first use all the features in our analysis with tree size = 10000, max\_depth = 13 and learning rate = 0.1. We then output the feature importance in this model as shown in Figure~\ref{featureImportance}
+    
+    \begin{figure*}
+    \begin{center}
+    \includegraphics[width=18cm]{featureImportance}
+    \makeatletter\def\@captype{figure}\makeatother
+    \caption{\centering feature importance}
+    \label{featureImportance}
+    \end{center}  
+    \end{figure*}
+    
+    
+After that, we choose the 8 most influential feature for further fine-grained training and tuning. We finally get our parameters set as: tree size = 3000, max\_depth = 10 and learning rate = 0.2.
 
 
-\bibliography{sample}
 
+\section{Result}
+
+\subsection{Progress curve}
+The improvement of our project can be seen in Figure~\ref{improvement}
+    
+    \begin{figure*}
+    \begin{center}
+    \includegraphics[width=18cm]{improvement}
+    \makeatletter\def\@captype{figure}\makeatother
+    \caption{\centering Improvement of our project}
+    \label{improvement}
+    \end{center}
+    \end{figure*}
+
+\subsection{Scores}
+    
+    The best score is around 0.09059.
+    
+    Our final score is 0.10772.
+    
+    \begin{center}
+    \includegraphics[width=8cm]{rank1}
+    \makeatletter\def\@captype{figure}\makeatother
+    \caption{\centering Score}
+    \end{center}
+    
+\subsection{Rank}    
+    
+    There are 3066 teams in total. We rank at 977th / 3066. 
+    
+    \begin{center}
+    \includegraphics[width=8cm]{rank2}
+    \makeatletter\def\@captype{figure}\makeatother
+    \caption{\centering Rank}
+    \end{center}    
+
+\subsection{Result Analysis}
+The top 5 important features are: CompetitionOpenDays, day, store, StoreMonthCustomers, StoreDayAverage. It is easy to understand that the days since the competitor opening has a negative influence on the Sales. Usually there would be a lot of discounts on the first several days of new competitor opening. The Sales of the previous store will have a drastic decrease on Sales. But as the time goes, the influence would decrease. The day and store are the original information from the dataset. It is obvious that different stores would have different sales trend. What surprises us most is that the day in a month has such a big influence on the prediction. We can not find a reasonable explanations on it. We guess that the sales have a seasonal fluctuation. StoreMonthCustomers and StoreDayAverage are the features that we mined in our analysis. We use the average month sales to represent the store's monthly fluctuations. Intuitively, in different day of week, the sales would be different. But for the same day of week, they might have the same trend. For example, weekends are more likely to have more sales compared to weekdays.
+
+Besides feature selection, we also compare with several baseline methods to prove that our model works well. As shown in Table~\ref{models}, it is obvious that two of the ensemble regressor outperforms other regressor, just like what we have analyzed in the model selection phase. Gradient Boosting is more descriptive for our data so we use it as our main model. We tuned the model and finally get the parameters of tree size = 3000, max\_depth = 10. We have to note here that we cannot totally avoid over-fitting even when we use the cross validation. When we set the tree size = 10000, the model is definitely over-fitted since our training data contains only 1 million data points.
+
+  \begin{table}
+  \caption{Model Comparison} 
+  \begin{tabular}{|l|l|}
+  \hline
+   Model Selection & Score \\
+  \hline
+   Linear Regression& 0.3897 \\
+  \hline
+   Logistic Regression & 0.3328 \\
+  \hline
+   KNN(20 neighbors) & 0.3058 \\
+  \hline
+   Random Forest(1000 trees) & 0.1199 \\
+  \hline
+   Gradient Boosting(1000 trees) & 0.1077 \\
+  \hline
+  \end{tabular}
+  \label{models}  
+  \end{table}
+
+
+\section{Future Work}
+Since time limited, we have no time to do too much further analysis on the dataset. However, we did some preliminary work which may be useful for future work.
+    
+Among all the features, it seems that StateHoliday and SchoolHoliday are the least important features in the model. However, these kind of information may be useful for latent feature mining. According to some description in the Kaggle Forum, different states have different public holiday. Thus we can infer the state of each store based on the public holidays provided by the Calendar.
+Figure~\ref{States distribution} shows the state statistics. These stores distribute in 12 states and a quarter of them are located in Nordrhein-Westfalen. For one aspect, we could use the state as a feature dimension because different states could have different economic growth rate, which will have influence on the sales. What's more, we could infer the weather information based on the state information of each store. For example, bad weather is likely to cause flue and fever, which will stimulate the sales growth. 
+ 
+
+    \begin{center}
+    \includegraphics[width=8cm]{states}
+    \makeatletter\def\@captype{figure}\makeatother
+    \caption{\centering States Distribution}
+    \label{States distribution}
+    \end{center}   
+    
+%\addcontentsline{toc}{section}{References}
+\bibliographystyle{apacite}
+\bibliography{reference}
+\nocite{chen2010study}
+\nocite{giering2008retail}
+\nocite{chang2008fuzzy}
+\nocite{thiesing1995parallel}
 \end{document}
-k,6
+
